@@ -1,0 +1,24 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+    <Folder Name="/src/">
+        <Project Path="src/BillSharing.Domain/BillSharing.Domain.csproj" />
+        <Project Path="src/BillSharing.Application/BillSharing.Application.csproj" />
+        <Project Path="src/BillSharing.EntityFrameworkCore/BillSharing.EntityFrameworkCore.csproj" />
+        <Project Path="src/BillSharing.Web/BillSharing.Web.csproj" />
+        <Project Path="src/BillSharing.Domain.Shared/BillSharing.Domain.Shared.csproj" />
+        <Project Path="src/BillSharing.Application.Contracts/BillSharing.Application.Contracts.csproj" />
+        <Project Path="src/BillSharing.HttpApi/BillSharing.HttpApi.csproj" />
+        <Project Path="src/BillSharing.HttpApi.Client/BillSharing.HttpApi.Client.csproj" />
+        <Project Path="src/BillSharing.DbMigrator/BillSharing.DbMigrator.csproj" />
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="test/BillSharing.Application.Tests/BillSharing.Application.Tests.csproj" />
+        <Project Path="test/BillSharing.Web.Tests/BillSharing.Web.Tests.csproj" />
+        <Project Path="test/BillSharing.EntityFrameworkCore.Tests/BillSharing.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/BillSharing.TestBase/BillSharing.TestBase.csproj" />
+        <Project Path="test/BillSharing.Domain.Tests/BillSharing.Domain.Tests.csproj" />
+        <Project Path="test/BillSharing.HttpApi.Client.ConsoleTestApp/BillSharing.HttpApi.Client.ConsoleTestApp.csproj" />
+    </Folder>
+</Solution>
