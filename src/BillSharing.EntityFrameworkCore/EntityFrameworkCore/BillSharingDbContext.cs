@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
@@ -12,6 +12,8 @@ using Volo.Abp.Identity.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
+using BillSharing.Groups;
+using BillSharing.Expenses;
 
 namespace BillSharing.EntityFrameworkCore;
 
@@ -21,7 +23,13 @@ public class BillSharingDbContext :
     AbpDbContext<BillSharingDbContext>,
     IIdentityDbContext
 {
-    /* Add DbSet properties for your Aggregate Roots / Entities here. */
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<GroupMember> GroupMembers { get; set; }
+
+    public DbSet<Expense> Expenses { get; set; }
+    public DbSet<ExpenseItem> ExpenseItems { get; set; }
+    public DbSet<ItemSplit> ItemSplits { get; set; }
+
 
 
     #region Entities from the modules
@@ -69,14 +77,123 @@ public class BillSharingDbContext :
         builder.ConfigureIdentity();
         builder.ConfigureOpenIddict();
         builder.ConfigureBlobStoring();
-        
-        /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(BillSharingConsts.DbTablePrefix + "YourEntities", BillSharingConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        builder.Entity<Group>(b =>
+        {
+            b.ToTable(
+                BillSharingConsts.DbTablePrefix + "Groups",
+                BillSharingConsts.DbSchema
+            );
+
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(128);
+
+            b.Property(x => x.Description)
+                .HasMaxLength(512);
+
+            // Group → Members
+            b.HasMany(x => x.Members)
+                .WithOne(x => x.Group)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Group → Expenses
+            b.HasMany(x => x.Expenses)
+                .WithOne()
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<GroupMember>(b =>
+        {
+            b.ToTable(
+                BillSharingConsts.DbTablePrefix + "GroupMembers",
+                BillSharingConsts.DbSchema
+            );
+
+            b.ConfigureByConvention();
+
+            b.Property(x => x.JoinedAt)
+                .IsRequired();
+
+            // Prevent duplicate member in same group
+            b.HasIndex(x => new { x.GroupId, x.UserId })
+                .IsUnique();
+
+            b.HasOne(x => x.Group)
+                .WithMany(x => x.Members)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Expense>(b =>
+        {
+            b.ToTable(
+                BillSharingConsts.DbTablePrefix + "Expenses",
+                BillSharingConsts.DbSchema
+            );
+
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            b.Property(x => x.ExpenseDate)
+                .IsRequired();
+
+            b.HasMany(x => x.Items)
+                .WithOne(x => x.Expense)
+                .HasForeignKey(x => x.ExpenseId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ExpenseItem>(b =>
+        {
+            b.ToTable(
+                BillSharingConsts.DbTablePrefix + "ExpenseItems",
+                BillSharingConsts.DbSchema
+            );
+
+            b.ConfigureByConvention();
+
+            b.Property(x => x.ItemName)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            b.Property(x => x.TotalAmount)
+                .HasColumnType("decimal(18,2)");
+
+            b.HasMany(x => x.Splits)
+                .WithOne(x => x.ExpenseItem)
+                .HasForeignKey(x => x.ExpenseItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ItemSplit>(b =>
+        {
+            b.ToTable(
+                BillSharingConsts.DbTablePrefix + "ItemSplits",
+                BillSharingConsts.DbSchema
+            );
+
+            b.ConfigureByConvention();
+
+            b.Property(x => x.ShareAmount)
+                .HasColumnType("decimal(18,2)");
+
+            b.Property(x => x.IsPaid)
+                .IsRequired();
+
+            b.HasIndex(x => new { x.ExpenseItemId, x.UserId });
+
+            b.HasOne(x => x.ExpenseItem)
+                .WithMany(x => x.Splits)
+                .HasForeignKey(x => x.ExpenseItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }
