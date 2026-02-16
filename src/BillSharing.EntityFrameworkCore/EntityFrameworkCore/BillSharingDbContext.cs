@@ -94,6 +94,13 @@ public class BillSharingDbContext :
             b.Property(x => x.Description)
                 .HasMaxLength(512);
 
+            b.Property(x => x.InviteCode)
+                .IsRequired()
+                .HasMaxLength(16);
+
+            b.HasIndex(x => x.InviteCode)
+                .IsUnique();
+
             // Group → Members
             b.HasMany(x => x.Members)
                 .WithOne(x => x.Group)
