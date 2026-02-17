@@ -5,6 +5,14 @@
     "Menu:Home": "Home",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
+    "Menu:Groups": "Groups",
+
+    "InviteCodeCopied": "Invite code copied!",
+    "CopyFailed": "Copy failed.",
+    "ShareNotSupportedCopied": "Sharing not supported. Text copied instead.",
+    "ShareFailed": "Sharing failed.",
+    "ShareGroupMessage": "Join my group \"{0}\" using code: {1}",
+
     "BillSharing:GroupNameAlreadyExists": "A group with the same name already exists.",
     "BillSharing:GroupNotFound": "The requested group was not found.",
     "BillSharing:InvalidGroupInviteCode": "The invite code is invalid.",

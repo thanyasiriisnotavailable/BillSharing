@@ -1,0 +1,112 @@
+﻿@page
+@using BillSharing.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<BillSharingResource> L
+@model BillSharing.Web.Pages.Groups.IndexModel
+
+@section scripts
+{
+    <abp-script src="/Pages/Groups/Index.js" />
+}
+
+<abp-card class="group-section">
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <h2>@L["Groups"]</h2>
+            </abp-column>
+
+            <abp-column size-md="_6" class="text-end">
+                <abp-button button-type="Primary"
+                            icon="plus"
+                            href="/Groups/Create">
+                    @L["NewGroup"]
+                </abp-button>
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+
+    <abp-card-body>
+
+        <div class="row">
+
+            @foreach (var group in Model.Groups)
+            {
+                <div class="col-md-4">
+
+                    <div class="card mb-4 shadow-sm h-100 group-card"
+                         data-url="/Groups/Detail/@group.Id"
+                         style="cursor:pointer;">
+
+                        <div class="card-body">
+
+                            <!-- Header: Name + Edit Icon -->
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <h5 class="card-title mb-1">
+                                    @group.Name
+                                </h5>
+
+                                <a href="/Groups/Edit/@group.Id"
+                                   class="btn btn-sm btn-light"
+                                   onclick="event.stopPropagation();">
+                                    <i class="fa fa-pen"></i>
+                                </a>
+
+                            </div>
+
+                            <!-- Description -->
+                            <p class="card-text text-muted mt-2">
+                                @group.Description
+                            </p>
+
+                            <!-- Member Count -->
+                            <span class="badge bg-info mb-2">
+                                @group.MemberCount Members
+                            </span>
+
+                            <!-- Invite Code -->
+                            @if (!string.IsNullOrEmpty(group.InviteCode))
+                            {
+                                <div class="mt-2">
+
+                                    <small class="text-muted">Invite Code</small>
+
+                                    <div class="input-group input-group-sm mt-1"
+                                         onclick="event.stopPropagation();">
+
+                                        <input type="text"
+                                               class="form-control invite-code-input"
+                                               value="@group.InviteCode"
+                                               readonly />
+
+                                        <button class="btn btn-outline-secondary copy-btn"
+                                                type="button"
+                                                data-code="@group.InviteCode">
+                                            <i class="fa fa-copy"></i>
+                                        </button>
+
+                                        <button class="btn btn-outline-primary share-btn"
+                                                type="button"
+                                                data-code="@group.InviteCode"
+                                                data-group="@group.Name">
+                                            <i class="fa fa-share-alt"></i>
+                                        </button>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+
+        </div>
+
+    </abp-card-body>
+</abp-card>
+

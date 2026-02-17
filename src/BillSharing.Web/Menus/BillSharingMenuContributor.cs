@@ -31,6 +31,13 @@ public class BillSharingMenuContributor : IMenuContributor
                 "~/",
                 icon: "fa fa-home",
                 order: 1
+            ).AddItem(
+                new ApplicationMenuItem(
+                    "Groups",
+                    l["Groups"],
+                    url: "/Groups",
+                    icon: "fa fa-users"
+                )
             )
         );
 
