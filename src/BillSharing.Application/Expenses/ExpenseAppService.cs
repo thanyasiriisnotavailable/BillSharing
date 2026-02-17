@@ -33,7 +33,11 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (expense == null)
-            throw new EntityNotFoundException(typeof(Expense), id);
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseNotFound
+            ).WithData("Id", id);
+        }
 
         return ObjectMapper.Map<Expense, ExpenseDto>(expense);
     }
@@ -41,6 +45,20 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
 
     public async Task<ExpenseDto> CreateAsync(CreateExpenseDto input)
     {
+        if (string.IsNullOrWhiteSpace(input.Title))
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseTitleRequired
+            );
+        }
+
+        if (input.Items == null || !input.Items.Any())
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseItemRequired
+            );
+        }
+
         var expense = new Expense(
             _guidGenerator.Create(),
             input.GroupId,
@@ -51,6 +69,20 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
 
         foreach (var itemDto in input.Items)
         {
+            if (itemDto.TotalAmount <= 0)
+            {
+                throw new BusinessException(
+                    BillSharingDomainErrorCodes.ExpenseAmountInvalid
+                ).WithData("Amount", itemDto.TotalAmount);
+            }
+
+            if (itemDto.UserIds == null || !itemDto.UserIds.Any())
+            {
+                throw new BusinessException(
+                    BillSharingDomainErrorCodes.ExpenseSplitUserRequired
+                );
+            }
+
             var item = expense.AddItem(
                 itemDto.ItemName,
                 itemDto.TotalAmount

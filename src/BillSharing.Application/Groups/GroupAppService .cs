@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -62,6 +63,16 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     public async Task<GroupDto> CreateAsync(CreateUpdateGroupDto input)
     {
+        var existing = await _groupRepository
+        .FirstOrDefaultAsync(x => x.Name == input.Name);
+
+        if (existing != null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.GroupNameAlreadyExists
+            ).WithData("Name", input.Name);
+        }
+
         var group = new Group(input.Name, input.Description);
 
         await _groupRepository.InsertAsync(group, autoSave: true);
@@ -76,6 +87,18 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         var group = await _groupRepository.GetAsync(id);
 
+        var duplicate = await _groupRepository
+        .FirstOrDefaultAsync(x =>
+            x.Name == input.Name && x.Id != id
+        );
+
+        if (duplicate != null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.GroupNameAlreadyExists
+            ).WithData("Name", input.Name);
+        }
+
         group.Name = input.Name;
         group.Description = input.Description;
 
@@ -89,6 +112,15 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     public async Task DeleteAsync(Guid id)
     {
+        var group = await _groupRepository.FindAsync(id);
+
+        if (group == null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.GroupNotFound
+            ).WithData("Id", id);
+        }
+
         await _groupRepository.DeleteAsync(id);
     }
 
@@ -97,7 +129,14 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     public async Task<string> RegenerateInviteCodeAsync(Guid id)
     {
-        var group = await _groupRepository.GetAsync(id);
+        var group = await _groupRepository.FindAsync(id);
+
+        if (group == null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.GroupNotFound
+            ).WithData("Id", id);
+        }
 
         group.GenerateInviteCode();
 
