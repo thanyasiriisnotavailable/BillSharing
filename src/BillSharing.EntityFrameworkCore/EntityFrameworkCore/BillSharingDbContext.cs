@@ -25,12 +25,7 @@ public class BillSharingDbContext :
 {
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
-
     public DbSet<Expense> Expenses { get; set; }
-    public DbSet<ExpenseItem> ExpenseItems { get; set; }
-    public DbSet<ItemSplit> ItemSplits { get; set; }
-
-
 
     #region Entities from the modules
 
@@ -152,8 +147,12 @@ public class BillSharingDbContext :
             b.Property(x => x.ExpenseDate)
                 .IsRequired();
 
+            b.Property(x => x.PaidByUserId)
+                .IsRequired();
+
+            // Expense → Items
             b.HasMany(x => x.Items)
-                .WithOne(x => x.Expense)
+                .WithOne()
                 .HasForeignKey(x => x.ExpenseId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
@@ -171,11 +170,16 @@ public class BillSharingDbContext :
                 .IsRequired()
                 .HasMaxLength(256);
 
-            b.Property(x => x.TotalAmount)
-                .HasColumnType("decimal(18,2)");
+            b.Property(x => x.Unit)
+                .IsRequired();
 
+            b.Property(x => x.TotalAmount)
+                .HasColumnType("decimal(18,2)")
+                .IsRequired();
+
+            // Item → Splits (Aggregate boundary)
             b.HasMany(x => x.Splits)
-                .WithOne(x => x.ExpenseItem)
+                .WithOne()
                 .HasForeignKey(x => x.ExpenseItemId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
@@ -190,17 +194,15 @@ public class BillSharingDbContext :
             b.ConfigureByConvention();
 
             b.Property(x => x.ShareAmount)
-                .HasColumnType("decimal(18,2)");
+                .HasColumnType("decimal(18,2)")
+                .IsRequired();
 
             b.Property(x => x.IsPaid)
                 .IsRequired();
 
-            b.HasIndex(x => new { x.ExpenseItemId, x.UserId });
-
-            b.HasOne(x => x.ExpenseItem)
-                .WithMany(x => x.Splits)
-                .HasForeignKey(x => x.ExpenseItemId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Prevent duplicate split per user per item
+            b.HasIndex(x => new { x.ExpenseItemId, x.UserId })
+                .IsUnique();
         });
     }
 }

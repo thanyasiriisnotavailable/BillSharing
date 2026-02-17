@@ -1,11 +1,12 @@
 ﻿using BillSharing.Expenses;
 using BillSharing.Groups;
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Data;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Guids;
 
 namespace BillSharing;
 public class BillSharingDataSeederContributor
@@ -14,29 +15,24 @@ public class BillSharingDataSeederContributor
     private readonly IRepository<Group, Guid> _groupRepository;
     private readonly IRepository<GroupMember, Guid> _groupMemberRepository;
     private readonly IRepository<Expense, Guid> _expenseRepository;
-    private readonly IRepository<ExpenseItem, Guid> _expenseItemRepository;
-    private readonly IRepository<ItemSplit, Guid> _itemSplitRepository;
+    private readonly IGuidGenerator _guidGenerator;
 
     public BillSharingDataSeederContributor(
         IRepository<Group, Guid> groupRepository,
         IRepository<GroupMember, Guid> groupMemberRepository,
         IRepository<Expense, Guid> expenseRepository,
-        IRepository<ExpenseItem, Guid> expenseItemRepository,
-        IRepository<ItemSplit, Guid> itemSplitRepository)
+        IGuidGenerator guidGenerator)
     {
         _groupRepository = groupRepository;
         _groupMemberRepository = groupMemberRepository;
         _expenseRepository = expenseRepository;
-        _expenseItemRepository = expenseItemRepository;
-        _itemSplitRepository = itemSplitRepository;
+        _guidGenerator = guidGenerator;
     }
 
     public async Task SeedAsync(DataSeedContext context)
     {
         if (await _groupRepository.GetCountAsync() > 0)
-        {
             return;
-        }
 
         var userA = Guid.NewGuid();
         var userB = Guid.NewGuid();
@@ -70,53 +66,43 @@ public class BillSharingDataSeederContributor
         /* -----------------------------
          * Expense — Dinner
          * -----------------------------*/
-        var dinner = await _expenseRepository.InsertAsync(
-            new Expense
-            {
-                GroupId = group.Id,
-                Title = "Dinner",
-                PaidByUserId = userA,
-                ExpenseDate = DateTime.Now
-            },
-            autoSave: true
+        var dinner = new Expense(
+            _guidGenerator.Create(),
+            group.Id,
+            "Dinner",
+            userA,
+            DateTime.Now
         );
 
-        var friedRice = await _expenseItemRepository.InsertAsync(
-            new ExpenseItem
-            {
-                ExpenseId = dinner.Id,
-                ItemName = "Fried Rice",
-                Unit = 4,
-                TotalAmount = 200m
-            },
-            autoSave: true
-        );
+        // Add Items via domain method
+        var friedRice = dinner.AddItem("Fried Rice", 200m);
+        var omelette = dinner.AddItem("Egg Omelette", 80m);
 
-        var omelette = await _expenseItemRepository.InsertAsync(
-            new ExpenseItem
-            {
-                ExpenseId = dinner.Id,
-                ItemName = "Egg Omelette",
-                Unit = 2,
-                TotalAmount = 80m
-            },
-            autoSave: true
-        );
-
-        var splits = new List<ItemSplit>
-    {
-        new() { ExpenseItemId = friedRice.Id, UserId = userA, ShareAmount = 50, IsPaid = true,  PaidAt = DateTime.Now },
-        new() { ExpenseItemId = friedRice.Id, UserId = userB, ShareAmount = 50, IsPaid = false },
-        new() { ExpenseItemId = friedRice.Id, UserId = userC, ShareAmount = 50, IsPaid = false },
-        new() { ExpenseItemId = friedRice.Id, UserId = userD, ShareAmount = 50, IsPaid = true,  PaidAt = DateTime.Now },
-
-        new() { ExpenseItemId = omelette.Id, UserId = userA, ShareAmount = 40, IsPaid = true,  PaidAt = DateTime.Now },
-        new() { ExpenseItemId = omelette.Id, UserId = userB, ShareAmount = 40, IsPaid = false }
-    };
-
-        foreach (var split in splits)
+        // Equal split using UserIds list
+        friedRice.AddSplitsEqually(new List<Guid>
         {
-            await _itemSplitRepository.InsertAsync(split, autoSave: true);
+            userA, userB, userC, userD
+        });
+
+        omelette.AddSplitsEqually(new List<Guid>
+        {
+            userA, userB
+        });
+
+        // Mark some as paid
+        foreach (var split in friedRice.Splits)
+        {
+            if (split.UserId == userA || split.UserId == userD)
+                split.MarkAsPaid(DateTime.Now);
         }
+
+        foreach (var split in omelette.Splits)
+        {
+            if (split.UserId == userA)
+                split.MarkAsPaid(DateTime.Now);
+        }
+
+        // Persist aggregate root ONLY
+        await _expenseRepository.InsertAsync(dinner, autoSave: true);
     }
 }
