@@ -2,9 +2,8 @@
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using BillSharing.Groups;
 
-namespace BillSharing.Expenses;
+namespace BillSharing.Groups;
 public interface IGroupAppService : IApplicationService
 {
     Task<GroupDto> GetAsync(Guid id);
