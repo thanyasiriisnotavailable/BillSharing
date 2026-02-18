@@ -45,20 +45,21 @@
                             <!-- Header: Name + Edit Icon -->
                             <div class="d-flex justify-content-between align-items-start">
 
-                                <h5 class="card-title mb-1">
+                                <h5 class="card-title mb-1 group-name">
                                     @group.Name
                                 </h5>
 
-                                <a href="/Groups/Edit/@group.Id"
-                                   class="btn btn-sm btn-light"
-                                   onclick="event.stopPropagation();">
-                                    <i class="fa fa-pen"></i>
-                                </a>
-
+                                <div>
+                                    <button class="btn btn-sm btn-light edit-btn"
+                                            data-id="@group.Id"
+                                            data-mode="edit">
+                                        <i class="fa fa-pen"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Description -->
-                            <p class="card-text text-muted mt-2">
+                            <p class="card-text text-muted mt-2 group-description" data-id="@group.Id">
                                 @group.Description
                             </p>
 
@@ -105,7 +106,6 @@
 
                 </div>
             }
-
 
         </div>
 
