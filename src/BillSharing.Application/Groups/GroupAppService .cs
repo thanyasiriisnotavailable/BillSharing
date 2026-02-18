@@ -1,4 +1,6 @@
 ﻿using BillSharing.Expenses;
+using BillSharing.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +19,8 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         _groupRepository = groupRepository;
     }
+
+    [Authorize(BillSharingPermissions.Groups.Default)]
     public async Task<GroupDto> GetAsync(Guid id)
     {
         var group = await _groupRepository.GetAsync(id);
@@ -30,6 +34,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     // Get Paged List
     // ----------------------------
+    [Authorize(BillSharingPermissions.Groups.Default)]
     public async Task<PagedResultDto<GroupDto>> GetListAsync(GetGroupListDto input)
     {
         var queryable = await _groupRepository.WithDetailsAsync(x => x.Members);
@@ -61,6 +66,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     // Create
     // ----------------------------
+    [Authorize(BillSharingPermissions.Groups.Create)]
     public async Task<GroupDto> CreateAsync(CreateUpdateGroupDto input)
     {
         var existing = await _groupRepository
@@ -83,6 +89,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     // Update
     // ----------------------------
+    [Authorize(BillSharingPermissions.Groups.Edit)]
     public async Task<GroupDto> UpdateAsync(Guid id, CreateUpdateGroupDto input)
     {
         var group = await _groupRepository.GetAsync(id);
@@ -110,6 +117,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     // Delete
     // ----------------------------
+    [Authorize(BillSharingPermissions.Groups.Delete)]
     public async Task DeleteAsync(Guid id)
     {
         var group = await _groupRepository.FindAsync(id);

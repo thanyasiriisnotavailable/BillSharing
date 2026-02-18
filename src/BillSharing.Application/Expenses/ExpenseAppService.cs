@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BillSharing.Permissions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +31,7 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
         _guidGenerator = guidGenerator;
     }
 
+    [Authorize(BillSharingPermissions.Bills.Default)]
     public async Task<ExpenseDto> GetAsync(Guid id)
     {
         var queryable = await _expenseRepository.GetQueryableAsync();
@@ -48,7 +51,7 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
         return ObjectMapper.Map<Expense, ExpenseDto>(expense);
     }
 
-
+    [Authorize(BillSharingPermissions.Bills.Create)]
     public async Task<ExpenseDto> CreateAsync(CreateExpenseDto input)
     {
         if (string.IsNullOrWhiteSpace(input.Title))
@@ -102,6 +105,7 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
         return ObjectMapper.Map<Expense, ExpenseDto>(expense);
     }
 
+    [Authorize(BillSharingPermissions.Bills.Default)]
     public async Task<List<ExpenseDto>> GetListByGroupIdAsync(Guid groupId)
     {
         var queryable = await _expenseRepository.GetQueryableAsync();

@@ -29,6 +29,17 @@
 
 
     "Expense:Paid": "Paid",
-    "Expense:NotPaidYet": "Not Paid Yet"
+    "Expense:NotPaidYet": "Not Paid Yet",
+
+
+    "Permission:BillSharing": "Bill Sharing",
+    "Permission:Groups": "Groups",
+    "Permission:Groups.Create": "Create Group",
+    "Permission:Groups.Edit": "Edit Group",
+    "Permission:Groups.Delete": "Delete Group",
+    "Permission:Bills": "Bills",
+    "Permission:Bills.Create": "Create Bill",
+    "Permission:Bills.Edit": "Edit Bill",
+    "Permission:Bills.Delete": "Delete Bill"
   }
 }

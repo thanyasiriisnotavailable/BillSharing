@@ -25,20 +25,12 @@ public class BillSharingMenuContributor : IMenuContributor
 
         //Home
         context.Menu.AddItem(
-            new ApplicationMenuItem(
-                BillSharingMenus.Home,
-                l["Menu:Home"],
-                "~/",
-                icon: "fa fa-home",
-                order: 1
-            ).AddItem(
                 new ApplicationMenuItem(
                     "Groups",
                     l["Groups"],
                     url: "/Groups",
                     icon: "fa fa-users"
-                )
-            )
+                ).RequirePermissions(BillSharingPermissions.Groups.Default)
         );
 
 

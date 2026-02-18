@@ -9,10 +9,19 @@ public class BillSharingPermissionDefinitionProvider : PermissionDefinitionProvi
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(BillSharingPermissions.GroupName);
+        var group = context.AddGroup(BillSharingPermissions.GroupName, L("Permission:BillSharing"));
 
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(BillSharingPermissions.MyPermission1, L("Permission:MyPermission1"));
+        // Groups permissions
+        var groupsPermission = group.AddPermission(BillSharingPermissions.Groups.Default, L("Permission:Groups"));
+        groupsPermission.AddChild(BillSharingPermissions.Groups.Create, L("Permission:Groups.Create"));
+        groupsPermission.AddChild(BillSharingPermissions.Groups.Edit, L("Permission:Groups.Edit"));
+        groupsPermission.AddChild(BillSharingPermissions.Groups.Delete, L("Permission:Groups.Delete"));
+
+        // Bills permissions
+        var billsPermission = group.AddPermission(BillSharingPermissions.Bills.Default, L("Permission:Bills"));
+        billsPermission.AddChild(BillSharingPermissions.Bills.Create, L("Permission:Bills.Create"));
+        billsPermission.AddChild(BillSharingPermissions.Bills.Edit, L("Permission:Bills.Edit"));
+        billsPermission.AddChild(BillSharingPermissions.Bills.Delete, L("Permission:Bills.Delete"));
     }
 
     private static LocalizableString L(string name)

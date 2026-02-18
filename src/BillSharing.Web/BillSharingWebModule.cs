@@ -49,6 +49,7 @@ using Volo.Abp.OpenIddict;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Studio.Client.AspNetCore;
+using BillSharing.Permissions;
 
 namespace BillSharing.Web;
 
@@ -148,6 +149,11 @@ public class BillSharingWebModule : AbpModule
         Configure<PermissionManagementOptions>(options =>
         {
             options.IsDynamicPermissionStoreEnabled = true;
+        });
+
+        Configure<RazorPagesOptions>(options =>
+        {
+            options.Conventions.AuthorizePage("/Groups/Index",BillSharingPermissions.Groups.Default);
         });
     }
 
