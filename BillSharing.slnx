@@ -1,7 +1,4 @@
 <Solution>
-    <Configurations>
-        <Platform Name="Any CPU" />
-    </Configurations>
     <Folder Name="/src/">
         <Project Path="src/BillSharing.Domain/BillSharing.Domain.csproj" />
         <Project Path="src/BillSharing.Application/BillSharing.Application.csproj" />

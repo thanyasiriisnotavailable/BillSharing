@@ -18,6 +18,14 @@
             </abp-column>
 
             <abp-column size-md="_6" class="text-end">
+                <abp-button button-type="Outline_Primary"
+                            icon="sign-in-alt"
+                            class="me-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#JoinGroupModal">
+                    @L["Group:JoinGroup"]
+                </abp-button>
+
                 <abp-button button-type="Primary"
                             icon="plus"
                             data-bs-toggle="modal"
@@ -34,7 +42,7 @@
 
             @foreach (var group in Model.Groups)
             {
-                <div class="col-md-4">
+                <div class="col-md-4 my-3">
 
                     <div class="card mb-4 shadow-sm h-100 group-card"
                          data-url="/Groups/Details/@group.Id"
@@ -140,4 +148,20 @@
     <abp-modal-footer buttons="@(AbpModalButtons.Save | AbpModalButtons.Cancel)">
     </abp-modal-footer>
 </abp-modal>
-
+<abp-modal id="JoinGroupModal" centered="true">
+    <abp-modal-header title="@L["Group:JoinGroup"]"></abp-modal-header>
+    <abp-modal-body>
+        <form id="JoinGroupForm">
+            <div class="mb-3">
+                <label class="form-label">@L["Group:InviteCode"]</label>
+                <input type="text"
+                       id="JoinInviteCode"
+                       class="form-control"
+                       placeholder="Enter code here"
+                       maxlength="8"
+                       required />
+            </div>
+        </form>
+    </abp-modal-body>
+    <abp-modal-footer buttons="@(AbpModalButtons.Save | AbpModalButtons.Cancel)"></abp-modal-footer>
+</abp-modal>

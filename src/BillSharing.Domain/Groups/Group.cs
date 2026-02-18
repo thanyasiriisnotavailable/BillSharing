@@ -44,4 +44,12 @@ public class Group : FullAuditedAggregateRoot<Guid>
                 .ToArray()
         );
     }
+
+    public void AddMember(Guid userId)
+    {
+        Members ??= new List<GroupMember>();
+        if (Members.Any(m => m.UserId == userId)) return;
+
+        Members.Add(new GroupMember { UserId = userId, JoinedAt = DateTime.UtcNow });
+    }
 }

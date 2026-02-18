@@ -27,6 +27,10 @@
     "Group:Description": "Description",
     "Group:CreatedSuccessfully": "Group created successfully",
 
+    "Group:JoinGroup": "Join Group",
+    "Group:InviteCode": "Invite Code",
+    "Group:InviteCodeRequired": "Please enter an invite code.",
+    "Group:SuccessfullyJoined": "You have successfully joined the group!",
 
     "Expense:Paid": "Paid",
     "Expense:NotPaidYet": "Not Paid Yet",

@@ -166,6 +166,8 @@
                     .addClass('btn-light')
                     .html('<i class="fa fa-pen"></i>');
 
+                card.find('.cancel-edit-btn').remove();
+
                 abp.notify.success("Group updated successfully");
 
             }).fail(function (error) {
@@ -197,5 +199,36 @@
             .html('<i class="fa fa-pen"></i>');
 
         $(this).remove();
+    });
+
+    // Join Group Modal
+    var groupService = billSharing.groups.group;
+
+    var joinModal = $('#JoinGroupModal');
+
+    joinModal.find('.modal-footer .btn-primary').click(function (e) {
+        e.preventDefault();
+
+        var inviteCode = $('#JoinInviteCode').val();
+
+        if (!inviteCode) {
+            abp.message.warn(l('Group:InviteCodeRequired'));
+            return;
+        }
+
+        groupService.joinByInviteCode(inviteCode).done(function () {
+            abp.notify.success(l('Group:SuccessfullyJoined'));
+
+            $('#JoinInviteCode').val('');
+
+            joinModal.one('hidden.bs.modal', function () {
+                location.reload();
+            });
+
+            joinModal.modal('hide');
+
+        }).fail(function (error) {
+            abp.notify.error(error.responseJSON?.error?.message || l('Error'));
+        });
     });
 });

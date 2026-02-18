@@ -17,4 +17,6 @@ public interface IGroupAppService : IApplicationService
     Task DeleteAsync(Guid id);
 
     Task<string> RegenerateInviteCodeAsync(Guid id);
+
+    Task JoinByInviteCodeAsync(string inviteCode);
 }
