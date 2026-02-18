@@ -1,0 +1,162 @@
+﻿@page "{id:guid}"
+@model BillSharing.Web.Pages.Groups.DetailModel
+@using Microsoft.Extensions.Localization
+@using BillSharing.Localization
+@inject IStringLocalizer<BillSharingResource> L
+
+<div>
+
+    <!-- Empty State -->
+    @if (!Model.Expenses.Any())
+    {
+        <div class="alert alert-info">
+            No expenses yet.
+        </div>
+    }
+    else
+    {
+        <!-- Expense List -->
+        @foreach (var expense in Model.Expenses)
+        {
+            <div class="card mb-4 shadow-sm">
+                <!-- Expense Card Header -->
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">@expense.Title</h5>
+                            <small class="text-muted">
+                                @expense.ExpenseDate.ToShortDateString()
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expense Card Body -->
+                <div class="card-body">
+
+                    <!-- Expense Details -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Expense Details</h6>
+                        @foreach (var item in expense.Items)
+                        {
+                            <div class="border rounded px-3 py-2 mb-2 bg-light d-flex justify-content-between align-items-center">
+
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong>@item.ItemName</strong>
+
+                                        <!-- Members Count -->
+                                        <span class="badge bg-secondary-subtle text-dark d-flex align-items-center gap-1">
+                                            <i class="fas fa-users"></i>
+                                            @item.Splits.Count
+                                        </span>
+                                    </div>
+
+                                    <div class="small text-muted">
+                                        @string.Join(", ", item.Splits.Select(s => s.UserName))
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <strong>@item.TotalAmount.ToString("N2")</strong>
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+
+
+                    <!-- Expense Members -->
+                    <div>
+                        <h6 class="fw-bold mb-3">Members</h6>
+
+                        @{
+                            var users = expense.Items
+                            .SelectMany(i => i.Splits)
+                            .Select(s => new { s.UserId, s.UserName })
+                            .Distinct()
+                            .ToList();
+                        }
+
+                        <div class="accordion" id="expense-@(expense.Id)">
+
+                            <!-- Member List -->
+                            @foreach (var user in users)
+                            {
+                                decimal userTotal = 0;
+                                bool allPaid = true;
+
+                                foreach (var item in expense.Items)
+                                {
+                                    var split = item.Splits.FirstOrDefault(s => s.UserId == user.UserId);
+                                    if (split != null)
+                                    {
+                                        userTotal += split.ShareAmount;
+                                        if (!split.IsPaid) allPaid = false;
+                                    }
+                                }
+
+                                @* Explicitly defining IDs to avoid attribute parsing errors *@
+                                var collapseId = $"collapse-{expense.Id}-{user.UserId}";
+                                var targetId = $"#{collapseId}";
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed py-2"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="@targetId">
+
+                                            <div class="w-100 d-flex justify-content-between align-items-center">
+                                                <strong>@user.UserName</strong>
+                                                <div class="me-3">
+                                                    <span class="me-3">@userTotal.ToString("N2")</span>
+                                                    @if (allPaid)
+                                                    {
+                                                        <span class="badge bg-success">
+                                                            @L["Expense:Paid"]
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-danger">
+                                                            @L["Expense:NotPaidYet"]
+                                                        </span>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </h2>
+
+
+                                    <!-- Collapse -->
+                                    <div id="@collapseId"
+                                         class="accordion-collapse collapse"
+                                         data-bs-parent="#expense-@(expense.Id)">
+
+                                        <div class="accordion-body">
+                                            @foreach (var item in expense.Items)
+                                            {
+                                                var split = item.Splits.FirstOrDefault(s => s.UserId == user.UserId);
+                                                if (split != null)
+                                                {
+                                                    <div class="d-flex justify-content-between border-bottom py-1">
+                                                        <span>@item.ItemName</span>
+                                                        <span>
+                                                            @split.ShareAmount.ToString("N2")
+                                                        </span>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

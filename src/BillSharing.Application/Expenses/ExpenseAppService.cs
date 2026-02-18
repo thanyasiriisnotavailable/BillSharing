@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -7,19 +8,24 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
+using Volo.Abp.Identity;
+using Volo.Abp.ObjectMapping;
 
 namespace BillSharing.Expenses;
 
 public class ExpenseAppService : ApplicationService, IExpenseAppService
 {
     private readonly IRepository<Expense, Guid> _expenseRepository;
+    private readonly IRepository<IdentityUser, Guid> _userRepository;
     private readonly IGuidGenerator _guidGenerator;
 
     public ExpenseAppService(
         IRepository<Expense, Guid> expenseRepository,
+        IRepository<IdentityUser, Guid> userRepository,
         IGuidGenerator guidGenerator)
     {
         _expenseRepository = expenseRepository;
+        _userRepository = userRepository;
         _guidGenerator = guidGenerator;
     }
 
@@ -94,5 +100,42 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
         await _expenseRepository.InsertAsync(expense, autoSave: true);
 
         return ObjectMapper.Map<Expense, ExpenseDto>(expense);
+    }
+
+    public async Task<List<ExpenseDto>> GetListByGroupIdAsync(Guid groupId)
+    {
+        var queryable = await _expenseRepository.GetQueryableAsync();
+
+        var expenses = await queryable
+            .Where(e => e.GroupId == groupId)
+            .Include(e => e.Items)
+                .ThenInclude(i => i.Splits)
+            .ToListAsync();
+
+        var userIds = expenses
+            .SelectMany(e => e.Items)
+            .SelectMany(i => i.Splits)
+            .Select(s => s.UserId)
+            .Distinct()
+            .ToList();
+
+        var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
+
+        var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
+
+        var expenseDtos = ObjectMapper.Map<List<Expense>, List<ExpenseDto>>(expenses);
+
+        foreach (var expense in expenseDtos)
+        {
+            foreach (var item in expense.Items)
+            {
+                foreach (var split in item.Splits)
+                {
+                    split.UserName = userDict.GetValueOrDefault(split.UserId);
+                }
+            }
+        }
+
+        return expenseDtos;
     }
 }

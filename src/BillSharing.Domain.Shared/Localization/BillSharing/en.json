@@ -20,6 +20,9 @@
     "BillSharing:ExpenseTitleRequired": "Expense title is required.",
     "BillSharing:ExpenseItemRequired": "At least one expense item is required.",
     "BillSharing:ExpenseSplitUserRequired": "Each item must have at least one user.",
-    "BillSharing:ExpenseAmountInvalid": "Expense amount must be greater than zero."
+    "BillSharing:ExpenseAmountInvalid": "Expense amount must be greater than zero.",
+
+    "Expense:Paid": "Paid",
+    "Expense:NotPaidYet": "Not Paid Yet"
   }
 }

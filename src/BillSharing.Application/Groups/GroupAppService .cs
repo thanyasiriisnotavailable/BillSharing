@@ -32,7 +32,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     // ----------------------------
     public async Task<PagedResultDto<GroupDto>> GetListAsync(GetGroupListDto input)
     {
-        var queryable = await _groupRepository.GetQueryableAsync();
+        var queryable = await _groupRepository.WithDetailsAsync(x => x.Members);
 
         if (!string.IsNullOrWhiteSpace(input.Filter))
         {
