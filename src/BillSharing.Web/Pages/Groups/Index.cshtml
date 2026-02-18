@@ -1,6 +1,7 @@
 ﻿@page
 @using BillSharing.Localization
 @using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
 @inject IStringLocalizer<BillSharingResource> L
 @model BillSharing.Web.Pages.Groups.IndexModel
 
@@ -9,7 +10,7 @@
     <abp-script src="/Pages/Groups/Index.js" />
 }
 
-<abp-card class="group-section">
+<div class="group-section">
     <abp-card-header>
         <abp-row>
             <abp-column size-md="_6">
@@ -19,8 +20,9 @@
             <abp-column size-md="_6" class="text-end">
                 <abp-button button-type="Primary"
                             icon="plus"
-                            href="/Groups/Create">
-                    @L["NewGroup"]
+                            data-bs-toggle="modal"
+                            data-bs-target="#CreateGroupModal">
+                    @L["Group:NewGroup"]
                 </abp-button>
             </abp-column>
         </abp-row>
@@ -108,5 +110,34 @@
         </div>
 
     </abp-card-body>
-</abp-card>
+</div>
+<abp-modal id="CreateGroupModal" centered="true">
+    <abp-modal-header title="@L["Group:NewGroup"]"></abp-modal-header>
+
+    <abp-modal-body>
+
+        <form id="CreateGroupForm">
+
+            <div class="mb-3">
+                <label class="form-label">@L["Group:GroupName"]</label>
+                <input type="text"
+                       class="form-control"
+                       name="Name"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">@L["Group:Description"]</label>
+                <textarea class="form-control"
+                          name="Description"
+                          rows="3"></textarea>
+            </div>
+
+        </form>
+
+    </abp-modal-body>
+
+    <abp-modal-footer buttons="@(AbpModalButtons.Save | AbpModalButtons.Cancel)">
+    </abp-modal-footer>
+</abp-modal>
 
