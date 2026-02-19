@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -19,4 +20,6 @@ public interface IGroupAppService : IApplicationService
     Task<string> RegenerateInviteCodeAsync(Guid id);
 
     Task JoinByInviteCodeAsync(string inviteCode);
+
+    Task<List<UserLookupDto>> GetGroupMembersAsync(Guid groupId);
 }

@@ -30,4 +30,12 @@ public class Expense : FullAuditedAggregateRoot<Guid>
         _items.Add(item);
         return item;
     }
+
+    public void MarkPayerSplitsAsPaid(DateTime paidAt)
+    {
+        foreach (var item in _items)
+        {
+            item.MarkUserSplitAsPaid(PaidByUserId, paidAt);
+        }
+    }
 }

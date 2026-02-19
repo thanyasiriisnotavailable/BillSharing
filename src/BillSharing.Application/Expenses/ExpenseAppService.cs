@@ -100,6 +100,8 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
             item.AddSplitsEqually(itemDto.UserIds);
         }
 
+        expense.MarkPayerSplitsAsPaid(DateTime.UtcNow);
+
         await _expenseRepository.InsertAsync(expense, autoSave: true);
 
         return ObjectMapper.Map<Expense, ExpenseDto>(expense);

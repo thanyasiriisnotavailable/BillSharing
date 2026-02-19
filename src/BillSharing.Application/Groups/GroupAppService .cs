@@ -1,6 +1,7 @@
 ﻿using BillSharing.Expenses;
 using BillSharing.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Identity;
 using Volo.Abp.Users;
 
 namespace BillSharing.Groups;
@@ -16,10 +18,13 @@ namespace BillSharing.Groups;
 public class GroupAppService : ApplicationService, IGroupAppService
 {
     private readonly IRepository<Group, Guid> _groupRepository;
+    private readonly IIdentityUserRepository _userRepository;
 
-    public GroupAppService(IRepository<Group, Guid> groupRepository)
+    public GroupAppService(
+        IRepository<Group, Guid> groupRepository, IIdentityUserRepository userRepository)
     {
         _groupRepository = groupRepository;
+        _userRepository = userRepository;
     }
 
     [Authorize(BillSharingPermissions.Groups.Default)]
@@ -190,5 +195,29 @@ public class GroupAppService : ApplicationService, IGroupAppService
         await _groupRepository.UpdateAsync(group, autoSave: true);
 
         return group.InviteCode;
+    }
+
+    public async Task<List<UserLookupDto>> GetGroupMembersAsync(Guid groupId)
+    {
+        var group = await _groupRepository
+            .WithDetails(g => g.Members)
+            .FirstOrDefaultAsync(g => g.Id == groupId);
+
+        if (group == null || group.Members == null || !group.Members.Any())
+        {
+            return new List<UserLookupDto>();
+        }
+
+        var memberIds = group.Members
+            .Select(m => m.UserId)
+            .ToList();
+
+        var users = await _userRepository.GetListByIdsAsync(memberIds);
+
+        return users.Select(u => new UserLookupDto
+        {
+            Id = u.Id,
+            UserName = u.UserName
+        }).ToList();
     }
 }

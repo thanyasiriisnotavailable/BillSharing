@@ -1,15 +1,19 @@
+using BillSharing.Expenses;
 using Riok.Mapperly.Abstractions;
 using Volo.Abp.Mapperly;
 
 namespace BillSharing.Web;
 
-/*
- * You can add your own mappings here.
- * [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
- * public partial class BillSharingWebMappers : MapperBase<BookDto, CreateUpdateBookDto>
- * {
- *    public override partial CreateUpdateBookDto Map(BookDto source);
- * 
- *    public override partial void Map(BookDto source, CreateUpdateBookDto destination);
- * }
- */
+[Mapper]
+public partial class CreateExpenseViewModelToDtoMapper
+    : MapperBase<
+        Pages.Expenses.CreateModalModel.CreateExpenseViewModel,
+        CreateExpenseDto>
+{
+    public override partial CreateExpenseDto Map(
+        Pages.Expenses.CreateModalModel.CreateExpenseViewModel source);
+
+    public override partial void Map(
+        Pages.Expenses.CreateModalModel.CreateExpenseViewModel source,
+        CreateExpenseDto destination);
+}

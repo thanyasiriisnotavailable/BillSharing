@@ -3,18 +3,31 @@
 @using Microsoft.Extensions.Localization
 @using BillSharing.Localization
 @inject IStringLocalizer<BillSharingResource> L
+@section scripts
+{
+    <abp-script src="/Pages/Groups/Detail.js" />
+}
 
 <div>
+
+    <div class="d-flex justify-content-end mb-3">
+        <abp-button id="NewExpenseButton"
+                    data-group-id="@Model.GroupId"
+                    text="Add Expense"
+                    icon="plus"
+                    button-type="Primary" />
+    </div>
 
     <!-- Empty State -->
     @if (!Model.Expenses.Any())
     {
-        <div class="alert alert-info">
-            No expenses yet.
+        <div class="text-center text-muted my-5">
+            <p>No expenses yet.</p>
         </div>
     }
     else
     {
+
         <!-- Expense List -->
         @foreach (var expense in Model.Expenses)
         {

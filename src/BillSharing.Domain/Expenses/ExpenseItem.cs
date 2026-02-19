@@ -71,5 +71,15 @@ public class ExpenseItem : Entity<Guid>
             totalAssigned += userShare;
         }
     }
+
+    public void MarkUserSplitAsPaid(Guid userId, DateTime paidAt)
+    {
+        var split = _splits.FirstOrDefault(x => x.UserId == userId);
+
+        if (split == null)
+            return;
+
+        split.MarkAsPaid(paidAt);
+    }
 }
 
