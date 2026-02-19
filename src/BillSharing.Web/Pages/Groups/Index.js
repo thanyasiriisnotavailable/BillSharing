@@ -93,7 +93,7 @@
 
         }).fail(function (error) {
 
-            abp.notify.error(error.responseJSON?.error?.message || 'Error');
+            abp.notify.error(error.responseJSON?.error?.message || l('Error'));
 
         });
     });
@@ -168,10 +168,10 @@
 
                 card.find('.cancel-edit-btn').remove();
 
-                abp.notify.success("Group updated successfully");
+                abp.notify.success(l('Group:UpdatedSuccessfully'));
 
             }).fail(function (error) {
-                abp.notify.error(error.responseJSON?.error?.message || 'Error');
+                abp.notify.error(error.responseJSON?.error?.message || l('Error'));
             });
         }
     });

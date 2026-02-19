@@ -14,7 +14,7 @@
     <abp-card-header>
         <abp-row>
             <abp-column size-md="_6">
-                <h2>@L["Groups"]</h2>
+                <h2>@L["Menu:Groups"]</h2>
             </abp-column>
 
             <abp-column size-md="_6" class="text-end">
@@ -73,7 +73,7 @@
 
                             <!-- Member Count -->
                             <span class="badge bg-info mb-2">
-                                @group.MemberCount Members
+                                @group.MemberCount @L["Group:Members"]
                             </span>
 
                             <!-- Invite Code -->
@@ -81,7 +81,7 @@
                             {
                                 <div class="mt-2">
 
-                                    <small class="text-muted">Invite Code</small>
+                                    <small class="text-muted">@L["Group:InviteCode"]</small>
 
                                     <div class="input-group input-group-sm mt-1"
                                          onclick="event.stopPropagation();">
@@ -145,8 +145,10 @@
 
     </abp-modal-body>
 
-    <abp-modal-footer buttons="@(AbpModalButtons.Save | AbpModalButtons.Cancel)">
-    </abp-modal-footer>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
+        <button type="button" class="btn btn-primary">@L["Save"]</button>
+    </div>
 </abp-modal>
 <abp-modal id="JoinGroupModal" centered="true">
     <abp-modal-header title="@L["Group:JoinGroup"]"></abp-modal-header>
@@ -157,11 +159,14 @@
                 <input type="text"
                        id="JoinInviteCode"
                        class="form-control"
-                       placeholder="Enter code here"
+                       placeholder="@L["Group:InviteCodePlaceholder"]"
                        maxlength="8"
                        required />
             </div>
         </form>
     </abp-modal-body>
-    <abp-modal-footer buttons="@(AbpModalButtons.Save | AbpModalButtons.Cancel)"></abp-modal-footer>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
+        <button type="button" class="btn btn-primary">@L["Save"]</button>
+    </div>
 </abp-modal>

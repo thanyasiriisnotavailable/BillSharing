@@ -1,35 +1,36 @@
 ﻿var abp = abp || {};
 (function () {
+
     abp.modals.ExpenseCreateModal = function () {
         var modalManager;
         var $container;
+        var l = abp.localization.getResource('BillSharing');
 
         this.initModal = function (manager) {
             modalManager = manager;
             var $modal = modalManager.getModal();
             $container = $modal.find('#items-container');
 
-            // ADD INITIAL ITEM: If container is empty, add one automatically
+            // ADD INITIAL ITEM
             if ($container.children('.item-row').length === 0) {
                 addItem();
             }
 
-            // BIND ADD BUTTON
+            // ADD BUTTON
             $modal.on('click', '#AddItemButton', function (e) {
                 e.preventDefault();
                 addItem();
             });
 
-            // BIND REMOVE BUTTON
+            // REMOVE BUTTON
             $container.on('click', '.remove-item-button', function (e) {
                 e.preventDefault();
 
-                // Don't allow deleting the last item
                 if ($container.children('.item-row').length > 1) {
                     $(this).closest('.item-row').remove();
                     reIndexItems();
                 } else {
-                    abp.notify.warn("At least one item is required.");
+                    abp.notify.warn(l('Expense:AtLeastOneItemRequired'));
                 }
             });
         };
@@ -45,13 +46,11 @@
             $container.children('.item-row').each(function (index, element) {
                 var $row = $(element);
 
-                // Re-index text/number inputs
                 $row.find('input[name*="Expense.Items"]').each(function () {
                     var name = $(this).attr('name');
                     $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
                 });
 
-                // Re-index checkboxes and labels
                 $row.find('input[type="checkbox"]').each(function () {
                     var name = $(this).attr('name');
                     $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
@@ -64,4 +63,5 @@
             });
         }
     };
+
 })();

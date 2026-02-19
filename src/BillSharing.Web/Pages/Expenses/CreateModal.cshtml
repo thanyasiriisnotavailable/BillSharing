@@ -10,7 +10,7 @@
 
 <form asp-page="/Expenses/CreateModal">
     <abp-modal size="Large" centered="true">
-        <abp-modal-header title="New Expense"></abp-modal-header>
+        <abp-modal-header title="@L["Expense:NewExpense"]"></abp-modal-header>
 
         <abp-modal-body>
             <abp-input asp-for="Expense.GroupId" type="hidden" />
@@ -18,27 +18,29 @@
             <!-- Expense Info -->
             <div class="row">
                 <div class="col-md-6">
-                    <abp-input asp-for="Expense.Title" />
+                    <abp-input asp-for="Expense.Title" label="@L["Expense:Title"]" />
                 </div>
 
                 <div class="col-md-6">
                     <abp-select asp-for="Expense.PaidByUserId"
-                                label="@L["PaidBy"]"
+                                label="@L["Expense:PaidBy"]"
                                 asp-items="Model.UserSelectList" />
                 </div>
             </div>
-            <abp-input asp-for="Expense.ExpenseDate" type="date" />
+
+            <abp-input asp-for="Expense.ExpenseDate"
+                       type="date"
+                       label="@L["Expense:ExpenseDate"]" />
 
             <hr />
 
             <!-- Items Section -->
-            <h5>Items</h5>
+            <h5>@L["Expense:Items"]</h5>
 
-            <div id="items-container">
-            </div>
+            <div id="items-container"></div>
 
             <button type="button" id="AddItemButton" class="btn btn-secondary mt-2">
-                <i class="fa fa-plus"></i> Add Item
+                <i class="fa fa-plus"></i> @L["Expense:AddItem"]
             </button>
 
             <template id="item-template">
@@ -52,28 +54,35 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="mb-3">
-                                <label class="form-label">Item Name</label>
+                                <label class="form-label">@L["Expense:ItemName"]</label>
                                 <input name="Expense.Items[{index}].ItemName" class="form-control" required />
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label">Total Amount</label>
-                                <input name="Expense.Items[{index}].TotalAmount" type="number" step="0.01" class="form-control" required />
+                                <label class="form-label">@L["Expense:TotalAmount"]</label>
+                                <input name="Expense.Items[{index}].TotalAmount"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control"
+                                       required />
                             </div>
                         </div>
                     </div>
 
-                    <label class="fw-bold">Share With</label>
+                    <label class="fw-bold">@L["Expense:ShareWith"]</label>
                     <div class="row">
                         @foreach (var user in Model.UserSelectList)
                         {
                             <div class="col-md-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox"
-                                           name="Expense.Items[{index}].UserIds" value="@user.Value"
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="Expense.Items[{index}].UserIds"
+                                           value="@user.Value"
                                            id="user_{index}_@user.Value" />
-                                    <label class="form-check-label" for="user_{index}_@user.Value">
+                                    <label class="form-check-label"
+                                           for="user_{index}_@user.Value">
                                         @user.Text
                                     </label>
                                 </div>
@@ -85,8 +94,10 @@
 
         </abp-modal-body>
 
-        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)">
-        </abp-modal-footer>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@L["Cancel"]</button>
+            <button type="button" class="btn btn-primary">@L["Save"]</button>
+        </div>
     </abp-modal>
 </form>
 

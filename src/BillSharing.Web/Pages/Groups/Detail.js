@@ -14,8 +14,6 @@
 
         var groupId = $(this).attr('data-group-id');
 
-        console.log("GroupId:", groupId); // DEBUG
-
         createExpenseModal.open({
             groupId: groupId
         });

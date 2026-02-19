@@ -25,7 +25,10 @@
     "Group:NewGroup": "New Group",
     "Group:GroupName": "Group Name",
     "Group:Description": "Description",
+    "Group:Members": "Members",
     "Group:CreatedSuccessfully": "Group created successfully",
+    "Group:UpdatedSuccessfully": "Group updated successfully",
+    "Group:InviteCodePlaceholder": "Enter code here",
 
     "Group:JoinGroup": "Join Group",
     "Group:InviteCode": "Invite Code",
@@ -34,7 +37,19 @@
 
     "Expense:Paid": "Paid",
     "Expense:NotPaidYet": "Not Paid Yet",
-
+    "Expense:NewExpense": "New Expense",
+    "Expense:Title": "Title",
+    "Expense:ExpenseDate": "Expense Date",
+    "Expense:Items": "Items",
+    "Expense:AddItem": "Add Item",
+    "Expense:ItemName": "Item Name",
+    "Expense:TotalAmount": "Total Amount",
+    "Expense:ShareWith": "Share With",
+    "Expense:AtLeastOneItemRequired": "At least one item is required.",
+    "Expense:PaidBy": "Paid By",
+    "Expense:AddExpense": "Add Expense",
+    "Expense:NoExpensesYet": "No expenses yet.",
+    "Expense:Details": "Expense Details",
 
     "Permission:BillSharing": "Bill Sharing",
     "Permission:Groups": "Groups",
@@ -44,6 +59,10 @@
     "Permission:Bills": "Bills",
     "Permission:Bills.Create": "Create Bill",
     "Permission:Bills.Edit": "Edit Bill",
-    "Permission:Bills.Delete": "Delete Bill"
+    "Permission:Bills.Delete": "Delete Bill",
+
+    "Error": "An error occurred",
+    "Save": "Save",
+    "Cancel": "Cancel"
   }
 }
