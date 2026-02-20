@@ -16,3 +16,28 @@
 .group-card .input-group {
     cursor: text;
 }
+
+.split-list > div:not(:last-child) {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.accordion-button {
+    position: relative;
+    padding-right: 3rem; /* space for arrow */
+}
+
+.accordion-button::after {
+    position: absolute;
+    right: 1rem;
+}
+
+.status-badge {
+    min-width: 90px;
+    text-align: center;
+    margin-left: 0.5rem;
+}
+
+.expense-header, .expense-header .text-muted {
+    background-color: #212529;
+    color: white;
+}

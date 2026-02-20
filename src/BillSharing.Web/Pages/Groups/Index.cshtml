@@ -12,15 +12,15 @@
 
 <div class="group-section">
     <abp-card-header>
-        <abp-row>
-            <abp-column size-md="_6">
-                <h2>@L["Menu:Groups"]</h2>
-            </abp-column>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
 
-            <abp-column size-md="_6" class="text-end">
+            <h2 class="mb-0 me-3">
+                @L["Menu:Groups"]
+            </h2>
+
+            <div class="d-flex gap-2 flex-shrink-0">
                 <abp-button button-type="Outline_Primary"
                             icon="sign-in-alt"
-                            class="me-2"
                             data-bs-toggle="modal"
                             data-bs-target="#JoinGroupModal"
                             title="@L["Group:JoinGroup"]">
@@ -34,8 +34,9 @@
                             title="@L["Group:NewGroup"]">
                     @L["Group:NewGroup"]
                 </abp-button>
-            </abp-column>
-        </abp-row>
+            </div>
+
+        </div>
     </abp-card-header>
 
     <abp-card-body>
@@ -44,7 +45,7 @@
 
             @foreach (var group in Model.Groups)
             {
-                <div class="col-md-4 my-3">
+                <div class="col-lg-4 col-md-6 my-3">
 
                     <div class="card group-card mb-4 h-100 rounded-4"
                          data-url="/Groups/Details/@group.Id"y>
@@ -52,13 +53,13 @@
                         <div class="card-body rounded-4">
 
                             <!-- Header: Name + Edit Icon -->
-                            <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex justify-content-between align-items-start flex-nowrap">
 
-                                <h5 class="card-title mb-1 group-name">
+                                <h5 class="card-title mb-1 group-name text-truncate w-100 me-2">
                                     @group.Name
                                 </h5>
 
-                                <div>
+                                <div class="flex-shrink-0">
                                     <button class="btn btn-sm btn-light edit-btn"
                                             data-id="@group.Id"
                                             data-mode="edit"
