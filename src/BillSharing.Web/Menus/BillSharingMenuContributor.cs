@@ -23,17 +23,6 @@ public class BillSharingMenuContributor : IMenuContributor
     {
         var l = context.GetLocalizer<BillSharingResource>();
 
-        //Home
-        context.Menu.AddItem(
-                new ApplicationMenuItem(
-                    "Groups",
-                    l["Groups"],
-                    url: "/Groups",
-                    icon: "fa fa-users"
-                ).RequirePermissions(BillSharingPermissions.Groups.Default)
-        );
-
-
         //Administration
         var administration = context.Menu.GetAdministration();
         administration.Order = 6;
