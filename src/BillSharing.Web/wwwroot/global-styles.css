@@ -17,6 +17,21 @@
     cursor: text;
 }
 
+.group-card .input-group-text.flex-fill {
+    color: #6c757d;
+}
+
+.input-group-text.copy-btn,
+.input-group-text.share-btn {
+    cursor: pointer;
+    background-color: white;
+}
+
+.input-group-text.copy-btn:hover,
+.input-group-text.share-btn:hover {
+    background-color: #e2e6ea;
+}
+
 .split-list > div:not(:last-child) {
     border-bottom: 1px solid #dee2e6;
 }
