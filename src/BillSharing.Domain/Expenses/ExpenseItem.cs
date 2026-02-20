@@ -72,14 +72,17 @@ public class ExpenseItem : Entity<Guid>
         }
     }
 
-    public void MarkUserSplitAsPaid(Guid userId, DateTime paidAt)
+    public void SetUserSplitPaymentStatus(Guid userId, bool isPaid, DateTime? paidAt = null)
     {
         var split = _splits.FirstOrDefault(x => x.UserId == userId);
 
         if (split == null)
             return;
 
-        split.MarkAsPaid(paidAt);
+        if (isPaid)
+            split.MarkAsPaid(paidAt ?? DateTime.Now);
+        else
+            split.MarkAsUnpaid();
     }
 }
 

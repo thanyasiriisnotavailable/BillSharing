@@ -31,16 +31,45 @@
         <!-- Expense List -->
         @foreach (var expense in Model.Expenses)
         {
+            var mySplits = expense.Items
+            .SelectMany(i => i.Splits)
+            .Where(s => s.UserId == Model.CurrentUserId);
+
+            bool isSharedWithMe = mySplits.Any();
+            bool iAlreadyPaid = isSharedWithMe && mySplits.All(s => s.IsPaid);
+
             <div class="card mb-4 shadow-sm border-0 rounded-4">
                 <!-- Expense Card Header -->
                 <div class="card-header expense-header rounded-top-4">
-                    <div class="flex-grow-1 min-w-0">
-                        <h5 class="mb-0 text-truncate">
-                            @expense.Title
-                        </h5>
-                        <small class="text-white d-block">
-                            @expense.ExpenseDate.ToString("d", System.Globalization.CultureInfo.CurrentUICulture)
-                        </small>
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                        <!-- Left: Title + Date -->
+                        <div class="flex-grow-1 min-w-0">
+                            <h5 class="mb-1 text-truncate fw-semibold">
+                                @expense.Title
+                            </h5>
+
+                            <small class="expense-date d-block">
+                                @expense.ExpenseDate.ToString("d", System.Globalization.CultureInfo.CurrentUICulture)
+                            </small>
+                        </div>
+
+                        <!-- Right: Toggle -->
+                        @if (isSharedWithMe)
+                        {
+                            <div class="form-check form-switch expense-switch m-0">
+                                <input class="form-check-input expense-paid-checkbox"
+                                       type="checkbox"
+                                       role="switch"
+                                       data-expense-id="@expense.Id"
+                                       data-confirm-message="@L["Expense:ConfirmUnpaid"]"
+                                       @(iAlreadyPaid ? "checked" : "") />
+
+                                <label class="form-check-label small ms-2 @(iAlreadyPaid ? "text-primary fw-semibold" : "text-default")">
+                                    @L["Expense:MarkAsPaid"]
+                                </label>
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -173,4 +202,29 @@
             </div>
         }
     }
+</div>
+
+<div class="modal fade" id="paymentConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-semibold" id="paymentConfirmTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body pt-2">
+                <p class="mb-0 text-muted" id="paymentConfirmMessage"></p>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                    @L["Cancel"]
+                </button>
+
+                <button type="button" class="btn" id="paymentConfirmBtn"></button>
+            </div>
+
+        </div>
+    </div>
 </div>

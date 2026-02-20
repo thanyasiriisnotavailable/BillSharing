@@ -35,7 +35,7 @@ public class Expense : FullAuditedAggregateRoot<Guid>
     {
         foreach (var item in _items)
         {
-            item.MarkUserSplitAsPaid(PaidByUserId, paidAt);
+            item.SetUserSplitPaymentStatus(PaidByUserId, true, paidAt);
         }
     }
 }

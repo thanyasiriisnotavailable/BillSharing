@@ -38,6 +38,13 @@
 }
 
 .expense-header, .expense-header .text-muted {
-    background-color: #212529;
-    color: white;
+    background-color: #F1F3F5;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 0.8rem 1.25rem;
+}
+
+.expense-switch {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
 }

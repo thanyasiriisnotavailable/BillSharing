@@ -52,6 +52,12 @@
     "Expense:AddExpense": "เพิ่มค่าใช้จ่าย",
     "Expense:NoExpensesYet": "ยังไม่มีค่าใช้จ่าย",
     "Expense:Details": "รายละเอียดค่าใช้จ่าย",
+    "Expense:MarkAsPaid": "ชำระแล้ว",
+    "Expense:ConfirmUnpaid": "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการทำเครื่องหมายว่าชำระแล้ว?",
+    "Expense:ConfirmMarkPaid": "คุณแน่ใจหรือไม่ว่าต้องการทำเครื่องหมายว่ารายการนี้ชำระแล้ว?",
+    "Expense:ConfirmMarkPaidTitle": "ยืนยันการชำระเงิน",
+    "Expense:ConfirmUnpaidTitle": "ยืนยันการยกเลิกการชำระเงิน",
+    "Expense:PaymentStatusUpdated": "อัปเดตสถานะการชำระเงินเรียบร้อยแล้ว",
 
     "Permission:BillSharing": "ระบบแชร์บิล",
     "Permission:Groups": "กลุ่ม",
@@ -64,6 +70,7 @@
     "Permission:Bills.Delete": "ลบบิล",
 
     "Error": "เกิดข้อผิดพลาด",
+    "Confirm": "ยืนยัน",
     "Save": "บันทึก",
     "Cancel": "ยกเลิก"
   }

@@ -12,6 +12,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
 
 namespace BillSharing.Expenses;
 
@@ -144,4 +145,33 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
 
         return expenseDtos;
     }
+
+
+    [Authorize(BillSharingPermissions.Bills.Default)]
+    public async Task SetMyPaymentStatusAsync(Guid expenseId, bool isPaid)
+    {
+        var userId = CurrentUser.GetId();
+
+        var queryable = await _expenseRepository.GetQueryableAsync();
+
+        var expense = await queryable
+            .Include(x => x.Items)
+                .ThenInclude(i => i.Splits)
+            .FirstOrDefaultAsync(x => x.Id == expenseId);
+
+        if (expense == null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseNotFound
+            );
+        }
+
+        foreach (var item in expense.Items)
+        {
+            item.SetUserSplitPaymentStatus(userId, isPaid, DateTime.Now);
+        }
+
+        await _expenseRepository.UpdateAsync(expense, autoSave: true);
+    }
+
 }

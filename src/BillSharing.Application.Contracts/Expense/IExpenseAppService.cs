@@ -12,4 +12,6 @@ public interface IExpenseAppService : IApplicationService
     Task<ExpenseDto> GetAsync(Guid id);
 
     Task<List<ExpenseDto>> GetListByGroupIdAsync(Guid groupId);
+
+    Task SetMyPaymentStatusAsync(Guid expenseId, bool isPaid);
 }

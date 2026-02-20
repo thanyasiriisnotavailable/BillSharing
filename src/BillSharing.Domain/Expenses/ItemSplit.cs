@@ -30,7 +30,7 @@ public class ItemSplit : Entity<Guid>
     public void MarkAsPaid(DateTime paidAt)
     {
         if (IsPaid)
-            throw new BusinessException("Split already paid.");
+            return;
 
         IsPaid = true;
         PaidAt = paidAt;
