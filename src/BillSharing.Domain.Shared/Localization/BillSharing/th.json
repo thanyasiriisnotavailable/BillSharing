@@ -29,9 +29,11 @@
     "Group:CreatedSuccessfully": "สร้างกลุ่มสำเร็จ",
     "Group:UpdatedSuccessfully": "อัปเดตกลุ่มสำเร็จ",
     "Group:InviteCodePlaceholder": "กรอกรหัสที่นี่",
-
+    "Group:EditGroup": "แก้ไขกลุ่ม",
     "Group:JoinGroup": "เข้าร่วมกลุ่ม",
     "Group:InviteCode": "รหัสเชิญ",
+    "Group:CopyInviteCode": "คัดลอกรหัสเชิญ",
+    "Group:ShareInviteCode": "แชร์รหัสเชิญ",
     "Group:InviteCodeRequired": "กรุณากรอกรหัสเชิญ",
     "Group:SuccessfullyJoined": "คุณเข้าร่วมกลุ่มสำเร็จแล้ว!",
 

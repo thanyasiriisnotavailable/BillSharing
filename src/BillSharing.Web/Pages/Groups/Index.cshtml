@@ -22,14 +22,16 @@
                             icon="sign-in-alt"
                             class="me-2"
                             data-bs-toggle="modal"
-                            data-bs-target="#JoinGroupModal">
+                            data-bs-target="#JoinGroupModal"
+                            title="@L["Group:JoinGroup"]">
                     @L["Group:JoinGroup"]
                 </abp-button>
 
                 <abp-button button-type="Primary"
                             icon="plus"
                             data-bs-toggle="modal"
-                            data-bs-target="#CreateGroupModal">
+                            data-bs-target="#CreateGroupModal"
+                            title="@L["Group:NewGroup"]">
                     @L["Group:NewGroup"]
                 </abp-button>
             </abp-column>
@@ -38,17 +40,16 @@
 
     <abp-card-body>
 
-        <div class="row">
+        <div class="row @(Model.Groups.Count <= 2 ? "justify-content-center" : "")">
 
             @foreach (var group in Model.Groups)
             {
                 <div class="col-md-4 my-3">
 
-                    <div class="card mb-4 shadow-sm h-100 group-card"
-                         data-url="/Groups/Details/@group.Id"
-                         style="cursor:pointer;">
+                    <div class="card group-card mb-4 h-100 rounded-4"
+                         data-url="/Groups/Details/@group.Id"y>
 
-                        <div class="card-body">
+                        <div class="card-body rounded-4">
 
                             <!-- Header: Name + Edit Icon -->
                             <div class="d-flex justify-content-between align-items-start">
@@ -60,7 +61,8 @@
                                 <div>
                                     <button class="btn btn-sm btn-light edit-btn"
                                             data-id="@group.Id"
-                                            data-mode="edit">
+                                            data-mode="edit"
+                                            title="@L["Group:EditGroup"]">
                                         <i class="fa fa-pen"></i>
                                     </button>
                                 </div>
@@ -73,7 +75,8 @@
 
                             <!-- Member Count -->
                             <span class="badge bg-info mb-2">
-                                @group.MemberCount @L["Group:Members"]
+                                @group.MemberCount
+                                @(group.MemberCount == 1 ? L["Group:Member"] : L["Group:Members"])
                             </span>
 
                             <!-- Invite Code -->
@@ -86,19 +89,20 @@
                                     <div class="input-group input-group-sm mt-1"
                                          onclick="event.stopPropagation();">
 
-                                        <input type="text"
-                                               class="form-control invite-code-input"
-                                               value="@group.InviteCode"
-                                               readonly />
+                                        <span class="input-group-text flex-fill fw-semibold pe-none">
+                                            @group.InviteCode
+                                        </span>
 
                                         <button class="btn btn-outline-secondary copy-btn"
                                                 type="button"
+                                                title="@L["Group:CopyInviteCode"]"
                                                 data-code="@group.InviteCode">
                                             <i class="fa fa-copy"></i>
                                         </button>
 
                                         <button class="btn btn-outline-primary share-btn"
                                                 type="button"
+                                                title="@L["Group:ShareInviteCode"]"
                                                 data-code="@group.InviteCode"
                                                 data-group="@group.Name">
                                             <i class="fa fa-share-alt"></i>

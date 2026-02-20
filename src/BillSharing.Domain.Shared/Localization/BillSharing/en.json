@@ -25,13 +25,16 @@
     "Group:NewGroup": "New Group",
     "Group:GroupName": "Group Name",
     "Group:Description": "Description",
+    "Group:Member": "Member",
     "Group:Members": "Members",
     "Group:CreatedSuccessfully": "Group created successfully",
     "Group:UpdatedSuccessfully": "Group updated successfully",
     "Group:InviteCodePlaceholder": "Enter code here",
-
+    "Group:EditGroup": "Edit Group",
     "Group:JoinGroup": "Join Group",
     "Group:InviteCode": "Invite Code",
+    "Group:CopyInviteCode": "Copy invite code",
+    "Group:ShareInviteCode": "Share invite code",
     "Group:InviteCodeRequired": "Please enter an invite code.",
     "Group:SuccessfullyJoined": "You have successfully joined the group!",
 
