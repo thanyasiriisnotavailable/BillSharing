@@ -41,6 +41,7 @@
     "Expense:Paid": "Paid",
     "Expense:NotPaidYet": "Not Paid Yet",
     "Expense:NewExpense": "New Expense",
+    "Expense:EditExpense": "Edit Expense",
     "Expense:Title": "Title",
     "Expense:ExpenseDate": "Expense Date",
     "Expense:Items": "Items",
@@ -70,6 +71,7 @@
     "Permission:Bills.Edit": "Edit Bill",
     "Permission:Bills.Delete": "Delete Bill",
 
+    "Edit": "Edit",
     "Error": "An error occurred",
     "Confirm": "Confirm",
     "Save": "Save",

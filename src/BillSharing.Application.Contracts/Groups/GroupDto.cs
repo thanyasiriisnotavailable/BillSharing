@@ -14,4 +14,6 @@ public class GroupDto : EntityDto<Guid>
     public DateTime? InviteCodeExpiry { get; set; }
 
     public int MemberCount { get; set; }
+
+    public bool IsOwner { get; set; }
 }

@@ -1,5 +1,5 @@
 ﻿$(function () {
-
+    // Create Expense Modal
     var createExpenseModal = new abp.ModalManager({
         viewUrl: abp.appPath + 'Expenses/CreateModal',
         modalClass: 'ExpenseCreateModal'
@@ -16,6 +16,26 @@
 
         createExpenseModal.open({
             groupId: groupId
+        });
+    });
+
+    // Edit Expense Modal
+    var editExpenseModal = new abp.ModalManager({
+        viewUrl: abp.appPath + 'Expenses/EditModal',
+        modalClass: 'ExpenseEditModal'
+    });
+
+    editExpenseModal.onResult(function () {
+        location.reload();
+    });
+
+    $(document).on('click', '.EditExpenseButton', function (e) {
+        e.preventDefault();
+
+        var expenseId = $(this).attr('data-expense-id');
+
+        editExpenseModal.open({
+            id: expenseId
         });
     });
 

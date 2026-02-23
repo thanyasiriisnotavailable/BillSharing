@@ -1,7 +1,7 @@
 ﻿var abp = abp || {};
 (function () {
 
-    abp.modals.ExpenseCreateModal = function () {
+    abp.modals.ExpenseEditModal = function () {
         var modalManager;
         var $container;
         var l = abp.localization.getResource('BillSharing');

@@ -40,6 +40,7 @@
     "Expense:Paid": "ชำระแล้ว",
     "Expense:NotPaidYet": "ยังไม่ชำระ",
     "Expense:NewExpense": "เพิ่มค่าใช้จ่ายใหม่",
+    "Expense:EditExpense": "แก้ไขค่าใข้จ่าย",
     "Expense:Title": "ชื่อรายการ",
     "Expense:ExpenseDate": "วันที่",
     "Expense:Items": "รายการย่อย",
@@ -69,6 +70,7 @@
     "Permission:Bills.Edit": "แก้ไขบิล",
     "Permission:Bills.Delete": "ลบบิล",
 
+    "Edit": "แก้ไข",
     "Error": "เกิดข้อผิดพลาด",
     "Confirm": "ยืนยัน",
     "Save": "บันทึก",

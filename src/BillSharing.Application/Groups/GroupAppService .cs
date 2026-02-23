@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Authorization;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.Users;
@@ -34,6 +35,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
 
         var dto = ObjectMapper.Map<Group, GroupDto>(group);
         dto.MemberCount = group.Members?.Count ?? 0;
+        dto.IsOwner = group.CreatorId == CurrentUser.GetId();
 
         return dto;
     }
@@ -111,6 +113,8 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         var group = await _groupRepository.GetAsync(id);
 
+        CheckIsOwner(group);
+
         var duplicate = await _groupRepository
         .FirstOrDefaultAsync(x =>
             x.Name == input.Name && x.Id != id
@@ -138,6 +142,8 @@ public class GroupAppService : ApplicationService, IGroupAppService
     public async Task DeleteAsync(Guid id)
     {
         var group = await _groupRepository.FindAsync(id);
+
+        CheckIsOwner(group);
 
         if (group == null)
         {
@@ -219,5 +225,13 @@ public class GroupAppService : ApplicationService, IGroupAppService
             Id = u.Id,
             UserName = u.UserName
         }).ToList();
+    }
+
+    private void CheckIsOwner(Group group)
+    {
+        if (group.CreatorId != CurrentUser.GetId())
+        {
+            throw new AbpAuthorizationException("Only the group owner can perform this action.");
+        }
     }
 }

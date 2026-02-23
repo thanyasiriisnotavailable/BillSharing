@@ -17,3 +17,17 @@ public partial class CreateExpenseViewModelToDtoMapper
         Pages.Expenses.CreateModalModel.CreateExpenseViewModel source,
         CreateExpenseDto destination);
 }
+
+[Mapper]
+public partial class UpdateExpenseViewModelToDtoMapper
+    : MapperBase<
+        Pages.Expenses.EditModalModel.UpdateExpenseViewModel,
+        UpdateExpenseDto>
+{
+    public override partial UpdateExpenseDto Map(
+        Pages.Expenses.EditModalModel.UpdateExpenseViewModel source);
+
+    public override partial void Map(
+        Pages.Expenses.EditModalModel.UpdateExpenseViewModel source,
+        UpdateExpenseDto destination);
+}

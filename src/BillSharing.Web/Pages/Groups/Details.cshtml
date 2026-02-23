@@ -70,6 +70,16 @@
                                 </label>
                             </div>
                         }
+
+                        @if (Model.Group.IsOwner)
+                        {
+                            <abp-button class="EditExpenseButton"
+                                        data-expense-id="@expense.Id"
+                                        text="@L["Edit"]"
+                                        icon="edit"
+                                        button-type="Secondary"
+                                        size="Small" />
+                        }
                     </div>
                 </div>
 
