@@ -50,3 +50,11 @@ public partial class ItemSplitToDtoMapper
 
     public override partial void Map(ItemSplit source, ItemSplitDto destination);
 }
+
+
+[Mapper]
+public partial class ExpenseDtoToUpdateExpenseDtoMapper : MapperBase<ExpenseDto, UpdateExpenseDto>
+{
+    public override partial UpdateExpenseDto Map(ExpenseDto source);
+    public override partial void Map(ExpenseDto source, UpdateExpenseDto destination);
+}

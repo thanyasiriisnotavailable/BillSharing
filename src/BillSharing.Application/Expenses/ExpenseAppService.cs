@@ -7,11 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
-using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
 
 namespace BillSharing.Expenses;
@@ -104,6 +102,77 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
         expense.MarkPayerSplitsAsPaid(DateTime.UtcNow);
 
         await _expenseRepository.InsertAsync(expense, autoSave: true);
+
+        return ObjectMapper.Map<Expense, ExpenseDto>(expense);
+    }
+
+    [Authorize(BillSharingPermissions.Bills.Edit)]
+    public async Task<ExpenseDto> UpdateAsync(Guid id, UpdateExpenseDto input)
+    {
+        if (string.IsNullOrWhiteSpace(input.Title))
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseTitleRequired
+            );
+        }
+
+        if (input.Items == null || !input.Items.Any())
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseItemRequired
+            );
+        }
+
+        var queryable = await _expenseRepository.GetQueryableAsync();
+
+        var expense = await queryable
+            .Include(x => x.Items)
+                .ThenInclude(i => i.Splits)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (expense == null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.ExpenseNotFound
+            ).WithData("Id", id);
+        }
+
+        // Update simple properties
+        expense.SetTitle(input.Title);
+        expense.SetPaidBy(input.PaidByUserId);
+        expense.SetExpenseDate(input.ExpenseDate);
+
+        // Remove existing items
+        expense.ClearItems();
+
+        // Re-create items
+        foreach (var itemDto in input.Items)
+        {
+            if (itemDto.TotalAmount <= 0)
+            {
+                throw new BusinessException(
+                    BillSharingDomainErrorCodes.ExpenseAmountInvalid
+                ).WithData("Amount", itemDto.TotalAmount);
+            }
+
+            if (itemDto.UserIds == null || !itemDto.UserIds.Any())
+            {
+                throw new BusinessException(
+                    BillSharingDomainErrorCodes.ExpenseSplitUserRequired
+                );
+            }
+
+            var item = expense.AddItem(
+                itemDto.ItemName,
+                itemDto.TotalAmount
+            );
+
+            item.AddSplitsEqually(itemDto.UserIds);
+        }
+
+        expense.MarkPayerSplitsAsPaid(DateTime.UtcNow);
+
+        await _expenseRepository.UpdateAsync(expense, autoSave: true);
 
         return ObjectMapper.Map<Expense, ExpenseDto>(expense);
     }

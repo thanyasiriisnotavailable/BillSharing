@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
+namespace BillSharing.Expenses;
+
 public class Expense : FullAuditedAggregateRoot<Guid>
 {
     private readonly List<ExpenseItem> _items = new();
@@ -22,6 +24,26 @@ public class Expense : FullAuditedAggregateRoot<Guid>
         Title = title;
         PaidByUserId = paidByUserId;
         ExpenseDate = date;
+    }
+
+    public void SetTitle(string title)
+    {
+        Title = title;
+    }
+
+    public void SetPaidBy(Guid userId)
+    {
+        PaidByUserId = userId;
+    }
+
+    public void SetExpenseDate(DateTime date)
+    {
+        ExpenseDate = date;
+    }
+
+    public void ClearItems()
+    {
+        _items.Clear();
     }
 
     public ExpenseItem AddItem(string name, decimal totalAmount)
