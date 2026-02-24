@@ -46,7 +46,7 @@ public class CreateModalModel : AbpPageModel
         var users = await _groupAppService.GetGroupMembersAsync(groupId);
 
         UserSelectList = users
-            .Select(u => new SelectListItem(u.UserName, u.Id.ToString()))
+            .Select(u => new SelectListItem(u.UserName, u.UserId.ToString()))
             .ToList();
     }
 

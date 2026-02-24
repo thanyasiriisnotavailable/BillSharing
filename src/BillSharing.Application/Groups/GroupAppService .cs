@@ -113,7 +113,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         var group = await _groupRepository.GetAsync(id);
 
-        CheckIsOwner(group);
+        CheckGroupAccess(group, "owner"); // Only owners can edit
 
         var duplicate = await _groupRepository
         .FirstOrDefaultAsync(x =>
@@ -143,7 +143,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         var group = await _groupRepository.FindAsync(id);
 
-        CheckIsOwner(group);
+        CheckGroupAccess(group, "owner");
 
         if (group == null)
         {
@@ -203,35 +203,40 @@ public class GroupAppService : ApplicationService, IGroupAppService
         return group.InviteCode;
     }
 
-    public async Task<List<UserLookupDto>> GetGroupMembersAsync(Guid groupId)
+    public async Task<List<GroupMemberDto>> GetGroupMembersAsync(Guid groupId)
     {
         var group = await _groupRepository
             .WithDetails(g => g.Members)
             .FirstOrDefaultAsync(g => g.Id == groupId);
 
-        if (group == null || group.Members == null || !group.Members.Any())
-        {
-            return new List<UserLookupDto>();
-        }
+        if (group?.Members == null || !group.Members.Any())
+            return new List<GroupMemberDto>();
 
-        var memberIds = group.Members
-            .Select(m => m.UserId)
-            .ToList();
-
+        var memberIds = group.Members.Select(m => m.UserId).Distinct().ToList();
         var users = await _userRepository.GetListByIdsAsync(memberIds);
 
-        return users.Select(u => new UserLookupDto
+        var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
+
+        var groupMembers = group.Members.Select(m => new GroupMemberDto
         {
-            Id = u.Id,
-            UserName = u.UserName
-        }).ToList();
+            Id = m.Id,
+            UserId = m.UserId,
+            UserName = userDict[m.UserId],
+            Role = m.Role ?? "member",
+            JoinedAt = m.JoinedAt,
+        }).OrderByDescending(x => x.IsOwner).ThenBy(x => x.JoinedAt).ToList();
+
+        return groupMembers;
     }
 
-    private void CheckIsOwner(Group group)
+    private void CheckGroupAccess(Group group, string requiredRole = "owner")
     {
-        if (group.CreatorId != CurrentUser.GetId())
-        {
-            throw new AbpAuthorizationException("Only the group owner can perform this action.");
-        }
+        var currentUserId = CurrentUser.GetId();
+
+        if (requiredRole == "owner" && !group.IsOwner(currentUserId))
+            throw new AbpAuthorizationException("Only group owner can perform this action.");
+
+        if (requiredRole == "member" && !group.IsMember(currentUserId))
+            throw new AbpAuthorizationException("You must be a group member.");
     }
 }

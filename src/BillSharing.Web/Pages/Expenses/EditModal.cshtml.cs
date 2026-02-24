@@ -39,7 +39,7 @@ namespace BillSharing.Web.Pages.Expenses
                 .GetGroupMembersAsync(expenseDto.GroupId);
 
             UserSelectList = users
-                .Select(u => new SelectListItem(u.UserName, u.Id.ToString()))
+                .Select(u => new SelectListItem(u.UserName, u.UserId.ToString()))
                 .ToList();
 
             Expense = new UpdateExpenseViewModel

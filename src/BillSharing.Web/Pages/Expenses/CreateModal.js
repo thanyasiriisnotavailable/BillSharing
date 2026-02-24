@@ -46,7 +46,7 @@
             $container.children('.item-row').each(function (index, element) {
                 var $row = $(element);
 
-                $row.find('input[aname*="Expense.Items"]').each(function () {
+                $row.find('input[name*="Expense.Items"]').each(function () {
                     var name = $(this).attr('name');
                     $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
                 });

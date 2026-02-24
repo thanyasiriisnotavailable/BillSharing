@@ -21,5 +21,5 @@ public interface IGroupAppService : IApplicationService
 
     Task JoinByInviteCodeAsync(string inviteCode);
 
-    Task<List<UserLookupDto>> GetGroupMembersAsync(Guid groupId);
+    Task<List<GroupMemberDto>> GetGroupMembersAsync(Guid groupId);
 }

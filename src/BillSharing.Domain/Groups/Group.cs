@@ -22,8 +22,45 @@ public class Group : FullAuditedAggregateRoot<Guid>
     {
         Name = name;
         Description = description;
-
+        Members = new List<GroupMember>();
         GenerateInviteCode();
+    }
+
+    public bool IsOwner(Guid userId)
+    {
+        return CreatorId == userId ||
+               Members?.Any(m => m.UserId == userId && m.Role == "owner") == true;
+    }
+
+    public bool IsMember(Guid userId)
+    {
+        return Members?.Any(m => m.UserId == userId) == true;
+    }
+
+    public void AddMember(Guid userId, string role = "member")
+    {
+        Members ??= new List<GroupMember>();
+
+        if (Members.Any(m => m.UserId == userId))
+            return;
+
+        // Creator becomes owner
+        if (CreatorId == null)
+        {
+            CreatorId = userId;
+            role = "owner";
+        }
+
+        Members.Add(new GroupMember(userId, role));
+    }
+
+    public void SetMemberRole(Guid userId, string role)
+    {
+        var member = Members?.FirstOrDefault(m => m.UserId == userId);
+        if (member != null)
+        {
+            member.Role = role; // "owner" or "member"
+        }
     }
 
     public void GenerateInviteCode(int expiryDays = 7)
@@ -43,13 +80,5 @@ public class Group : FullAuditedAggregateRoot<Guid>
                 .Select(x => chars[random.Next(chars.Length)])
                 .ToArray()
         );
-    }
-
-    public void AddMember(Guid userId)
-    {
-        Members ??= new List<GroupMember>();
-        if (Members.Any(m => m.UserId == userId)) return;
-
-        Members.Add(new GroupMember { UserId = userId, JoinedAt = DateTime.UtcNow });
     }
 }

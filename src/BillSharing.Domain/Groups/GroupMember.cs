@@ -9,5 +9,16 @@ public class GroupMember : Entity<Guid>
 
     public DateTime JoinedAt { get; set; }
 
+    public string Role { get; set; } = "member";
+
     public Group Group { get; set; }
+
+    protected GroupMember() { }
+
+    public GroupMember(Guid userId, string role = "member")
+    {
+        UserId = userId;
+        Role = role;
+        JoinedAt = DateTime.UtcNow;
+    }
 }

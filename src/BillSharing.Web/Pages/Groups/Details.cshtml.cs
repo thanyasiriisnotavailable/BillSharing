@@ -18,6 +18,7 @@ public class DetailModel : PageModel
     public Guid GroupId { get; set; }
     public GroupDto Group { get; set; }
     public List<ExpenseDto> Expenses { get; set; }
+    public List<GroupMemberDto> Members { get; set; } = new();
     public Guid? CurrentUserId { get; set; }
 
     public DetailModel(
@@ -36,6 +37,7 @@ public class DetailModel : PageModel
         CurrentUserId = _currentUser.GetId();
 
         Group = await _groupAppService.GetAsync(id);
+        Members = await _groupAppService.GetGroupMembersAsync(id);
 
         Expenses = await _expenseAppService
             .GetListByGroupIdAsync(id);

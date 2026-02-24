@@ -47,7 +47,9 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
             ).WithData("Id", id);
         }
 
-        return ObjectMapper.Map<Expense, ExpenseDto>(expense);
+        var dto = ObjectMapper.Map<Expense, ExpenseDto>(expense);
+        await FillUserNamesAsync(dto);
+        return dto;
     }
 
     [Authorize(BillSharingPermissions.Bills.Create)]
@@ -103,7 +105,9 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
 
         await _expenseRepository.InsertAsync(expense, autoSave: true);
 
-        return ObjectMapper.Map<Expense, ExpenseDto>(expense);
+        var dto = ObjectMapper.Map<Expense, ExpenseDto>(expense);
+        await FillUserNamesAsync(dto);
+        return dto;
     }
 
     [Authorize(BillSharingPermissions.Bills.Edit)]
@@ -174,7 +178,10 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
 
         await _expenseRepository.UpdateAsync(expense, autoSave: true);
 
-        return ObjectMapper.Map<Expense, ExpenseDto>(expense);
+        var dto = ObjectMapper.Map<Expense, ExpenseDto>(expense);
+        await FillUserNamesAsync(dto);
+
+        return dto;
     }
 
     [Authorize(BillSharingPermissions.Bills.Default)]
@@ -199,20 +206,10 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
 
         var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
 
-        var expenseDtos = ObjectMapper.Map<List<Expense>, List<ExpenseDto>>(expenses);
+        var dtos = ObjectMapper.Map<List<Expense>, List<ExpenseDto>>(expenses);
+        await FillUserNamesAsync(dtos.ToArray());
 
-        foreach (var expense in expenseDtos)
-        {
-            foreach (var item in expense.Items)
-            {
-                foreach (var split in item.Splits)
-                {
-                    split.UserName = userDict.GetValueOrDefault(split.UserId);
-                }
-            }
-        }
-
-        return expenseDtos;
+        return dtos;
     }
 
 
@@ -243,4 +240,34 @@ public class ExpenseAppService : ApplicationService, IExpenseAppService
         await _expenseRepository.UpdateAsync(expense, autoSave: true);
     }
 
+    private async Task FillUserNamesAsync(params ExpenseDto[] dtos)
+    {
+        if (dtos == null || !dtos.Any()) return;
+
+        // Extract all unique user IDs from all splits in all expenses
+        var userIds = dtos
+            .SelectMany(e => e.Items ?? new())
+            .SelectMany(i => i.Splits ?? new())
+            .Select(s => s.UserId)
+            .Distinct()
+            .ToList();
+
+        if (!userIds.Any()) return;
+
+        // Fetch usernames from the identity repository
+        var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
+        var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
+
+        // Assign names back to the DTOs
+        foreach (var dto in dtos)
+        {
+            foreach (var item in dto.Items ?? new())
+            {
+                foreach (var split in item.Splits ?? new())
+                {
+                    split.UserName = userDict.GetValueOrDefault(split.UserId);
+                }
+            }
+        }
+    }
 }
