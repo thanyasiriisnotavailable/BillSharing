@@ -20,12 +20,16 @@ public class GroupAppService : ApplicationService, IGroupAppService
 {
     private readonly IRepository<Group, Guid> _groupRepository;
     private readonly IIdentityUserRepository _userRepository;
+    private readonly GroupPermissionChecker _groupPermissionChecker;
 
     public GroupAppService(
-        IRepository<Group, Guid> groupRepository, IIdentityUserRepository userRepository)
+        IRepository<Group, Guid> groupRepository,
+        IIdentityUserRepository userRepository,
+        GroupPermissionChecker groupPermissionChecker)
     {
         _groupRepository = groupRepository;
         _userRepository = userRepository;
+        _groupPermissionChecker = groupPermissionChecker;
     }
 
     [Authorize(BillSharingPermissions.Groups.Default)]
@@ -113,7 +117,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         var group = await _groupRepository.GetAsync(id);
 
-        CheckGroupAccess(group, "owner"); // Only owners can edit
+        await _groupPermissionChecker.CheckOwnerAsync(id); // Only owners can edit
 
         var duplicate = await _groupRepository
         .FirstOrDefaultAsync(x =>
@@ -143,7 +147,7 @@ public class GroupAppService : ApplicationService, IGroupAppService
     {
         var group = await _groupRepository.FindAsync(id);
 
-        CheckGroupAccess(group, "owner");
+        await _groupPermissionChecker.CheckOwnerAsync(id);
 
         if (group == null)
         {
@@ -205,38 +209,44 @@ public class GroupAppService : ApplicationService, IGroupAppService
 
     public async Task<List<GroupMemberDto>> GetGroupMembersAsync(Guid groupId)
     {
+        await _groupPermissionChecker.CheckMemberAsync(groupId);
+
         var group = await _groupRepository
             .WithDetails(g => g.Members)
             .FirstOrDefaultAsync(g => g.Id == groupId);
 
-        if (group?.Members == null || !group.Members.Any())
+        if (group == null)
+        {
+            throw new BusinessException(
+                BillSharingDomainErrorCodes.GroupNotFound
+            ).WithData("Id", groupId);
+        }
+
+        if (!group.Members.Any())
             return new List<GroupMemberDto>();
 
-        var memberIds = group.Members.Select(m => m.UserId).Distinct().ToList();
+        var memberIds = group.Members
+            .Select(m => m.UserId)
+            .Distinct()
+            .ToList();
+
         var users = await _userRepository.GetListByIdsAsync(memberIds);
 
         var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
 
-        var groupMembers = group.Members.Select(m => new GroupMemberDto
-        {
-            Id = m.Id,
-            UserId = m.UserId,
-            UserName = userDict[m.UserId],
-            Role = m.Role ?? "member",
-            JoinedAt = m.JoinedAt,
-        }).OrderByDescending(x => x.IsOwner).ThenBy(x => x.JoinedAt).ToList();
+        var groupMembers = group.Members
+            .Select(m => new GroupMemberDto
+            {
+                Id = m.Id,
+                UserId = m.UserId,
+                UserName = userDict.GetValueOrDefault(m.UserId),
+                Role = m.Role,
+                JoinedAt = m.JoinedAt
+            })
+            .OrderByDescending(x => x.IsOwner)
+            .ThenBy(x => x.JoinedAt)
+            .ToList();
 
         return groupMembers;
-    }
-
-    private void CheckGroupAccess(Group group, string requiredRole = "owner")
-    {
-        var currentUserId = CurrentUser.GetId();
-
-        if (requiredRole == "owner" && !group.IsOwner(currentUserId))
-            throw new AbpAuthorizationException("Only group owner can perform this action.");
-
-        if (requiredRole == "member" && !group.IsMember(currentUserId))
-            throw new AbpAuthorizationException("You must be a group member.");
     }
 }

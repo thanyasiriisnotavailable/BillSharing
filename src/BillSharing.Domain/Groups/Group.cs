@@ -28,8 +28,7 @@ public class Group : FullAuditedAggregateRoot<Guid>
 
     public bool IsOwner(Guid userId)
     {
-        return CreatorId == userId ||
-               Members?.Any(m => m.UserId == userId && m.Role == "owner") == true;
+        return Members?.Any(m => m.UserId == userId && m.Role == GroupRole.Owner) == true;
     }
 
     public bool IsMember(Guid userId)
@@ -37,7 +36,7 @@ public class Group : FullAuditedAggregateRoot<Guid>
         return Members?.Any(m => m.UserId == userId) == true;
     }
 
-    public void AddMember(Guid userId, string role = "member")
+    public void AddMember(Guid userId, GroupRole role = GroupRole.Member)
     {
         Members ??= new List<GroupMember>();
 
@@ -48,13 +47,13 @@ public class Group : FullAuditedAggregateRoot<Guid>
         if (CreatorId == null)
         {
             CreatorId = userId;
-            role = "owner";
+            role = GroupRole.Owner;
         }
 
         Members.Add(new GroupMember(userId, role));
     }
 
-    public void SetMemberRole(Guid userId, string role)
+    public void SetMemberRole(Guid userId, GroupRole role)
     {
         var member = Members?.FirstOrDefault(m => m.UserId == userId);
         if (member != null)

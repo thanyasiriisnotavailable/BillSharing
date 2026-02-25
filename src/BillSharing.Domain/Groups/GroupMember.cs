@@ -9,13 +9,13 @@ public class GroupMember : Entity<Guid>
 
     public DateTime JoinedAt { get; set; }
 
-    public string Role { get; set; } = "member";
+    public GroupRole Role { get; set; } = GroupRole.Member;
 
     public Group Group { get; set; }
 
     protected GroupMember() { }
 
-    public GroupMember(Guid userId, string role = "member")
+    public GroupMember(Guid userId, GroupRole role = GroupRole.Member)
     {
         UserId = userId;
         Role = role;

@@ -73,14 +73,16 @@
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
 
                         <!-- Left: Title + Date -->
-                        <div class="flex-grow-1 min-w-0">
-                            <h5 class="mb-1 text-truncate fw-semibold">
-                                @expense.Title
-                            </h5>
+                        <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <h5 class="mb-1 fw-semibold text-truncate">
+                                    @expense.Title
+                                </h5>
 
-                            <small class="expense-date d-block">
-                                @expense.ExpenseDate.ToString("d", System.Globalization.CultureInfo.CurrentUICulture)
-                            </small>
+                                <small class="expense-date d-block text-truncate">
+                                    @expense.ExpenseDate.ToString("d", System.Globalization.CultureInfo.CurrentUICulture)
+                                </small>
+                            </div>
                         </div>
 
                         <!-- Right: Toggle -->
